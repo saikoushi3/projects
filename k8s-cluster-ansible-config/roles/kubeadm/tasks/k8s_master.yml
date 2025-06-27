@@ -1,0 +1,34 @@
+- name: Initialize Kubernetes Master
+  shell: kubeadm init --pod-network-cidr=10.244.0.0/16
+  register: kubeadm_init
+  args:
+    creates: /etc/kubernetes/admin.conf
+
+- name: Create .kube directory
+  file:
+    path: /home/ubuntu/.kube
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: 0755
+
+- name: Copy kubeconfig to user dir
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /home/ubuntu/.kube/config
+    remote_src: yes
+    owner: ubuntu
+    group: ubuntu
+    mode: 0644
+
+- name: Install Flannel CNI
+  become: false
+  shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+  environment:
+    KUBECONFIG: /home/ubuntu/.kube/config
+
+- name: Extract join command
+  shell: kubeadm token create --print-join-command
+  register: join_cmd
+  changed_when: false
+  delegate_to: master

@@ -1,0 +1,12 @@
+- name: Kubernetes Cluster Setup
+  hosts: kubernetes
+  become: yes
+  roles:
+    - kubeadm
+
+
+- name: jenkins Setup
+  hosts: jenkins
+  become: yes
+  roles:
+    - jenkins-setup

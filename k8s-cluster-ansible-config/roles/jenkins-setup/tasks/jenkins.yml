@@ -1,0 +1,51 @@
+#- name: Configure Jenkins Server
+  #hosts: jenkins_server
+  #become: yes
+  #tasks:
+    # (Tasks from previous jenkins.yml playbook would go here)
+    # Ensure Java, Jenkins, Docker, Git, and kubectl are installed
+    - name: Update all packages
+      yum: { name: '*', state: latest }
+    - name: Install Git, Java, and Docker
+      yum:
+        name:
+          - git
+          - java-11-amazon-corretto-devel
+        state: present
+    - shell: |
+        amazon-linux-extras install docker -y
+        systemctl start docker
+        systemctl enable docker
+    - name: Install Jenkins
+      shell: |
+        wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+        rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+        yum install -y jenkins
+    - systemd: { name: jenkins, state: started, enabled: yes }
+    - name: Add jenkins user to docker group
+      user: { name: jenkins, groups: docker, append: yes }
+    - name: Install kubectl
+      shell: |
+        curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.22.6/2022-03-09/bin/linux/amd64/kubectl
+        chmod +x ./kubectl
+        mv ./kubectl /usr/local/bin/
+      args: { warn: false }
+
+      
+    - name: Install aws-iam-authenticator
+      shell: |
+        curl -o aws-iam-authenticator https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
+        chmod +x ./aws-iam-authenticator
+        mv ./aws-iam-authenticator /usr/local/bin/
+      args:
+        warn: false
+
+    - name: Print Jenkins initial admin password
+      shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+      register: jenkins_password
+      changed_when: false
+
+    - name: Display Jenkins initial admin password
+      debug:
+        msg: "Your Jenkins initial admin password is: {{ jenkins_password.stdout }}"
+

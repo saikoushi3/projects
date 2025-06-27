@@ -1,0 +1,12 @@
+- name: Wait for master to generate join command
+  pause:
+    seconds: 30
+
+- name: Fetch join command from master
+  shell: kubeadm token create --print-join-command
+  delegate_to: master
+  register: join_command
+  changed_when: false
+
+- name: Join Kubernetes Cluster
+  shell: "{{ join_command.stdout }}"
