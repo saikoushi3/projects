@@ -173,7 +173,7 @@ resource "aws_security_group" "jenkins" {
 
 # Jenkins Server
 resource "aws_instance" "jenkins_server" {
-  ami           = var.ami_id
+  ami           = var.ami_idd
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.jenkins.id]
@@ -202,4 +202,15 @@ resource "aws_instance" "k8s_worker" {
   tags          = { Name = "Project1-K8s-Worker-${count.index + 1}" }
 }
 
+resource "local_file" "save_outputs" {
+  content = join("\n", concat([
+    "jenkins_server_public_ip: ${aws_instance.jenkins_server.public_ip}",
+    "k8s_master_public_ip: ${aws_instance.k8s_master.public_ip}"
+  ], [
+    for i, ip in aws_instance.k8s_worker[*].public_ip :
+    "k8s_worker_${i + 1}: ${ip}"
+  ]))
+
+  filename = "K:/projects/k8s-cluster-ansible/output.txt"
+}
 

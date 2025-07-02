@@ -1,0 +1,4 @@
+jenkins_server_public_ip: 3.83.46.61
+k8s_master_public_ip: 44.202.0.64
+k8s_worker_1: 3.88.70.227
+k8s_worker_2: 44.212.18.97

@@ -2,7 +2,12 @@
 # Note: Using Amazon Linux 2 is recommended for kubeadm compatibility.
 variable "ami_id" {
   description = "AMI for EC2 instances"
-  default     = "ami-05ffe3c48a9991133" # Amazon Linux 2 AMI ID for us-east-1
+  default     = "ami-000ec6c25978d5999" # Amazon Linux 2 AMI ID for us-east-1
+}
+
+variable "ami_idd" {
+  description = "AMI for EC2 instances"
+  default     = "ami-0a7d80731ae1b2435" # ubuntu AMI ID for us-east-1
 }
 
 variable "key_name" {
