@@ -11,3 +11,10 @@
   become: yes
   roles:
     - role: k8s_workers
+
+- name: Jenkins Setup
+  hosts: jenkins
+  become: yes
+  roles:
+    - role: jenkins-setup
+  tags: jenkins-setup

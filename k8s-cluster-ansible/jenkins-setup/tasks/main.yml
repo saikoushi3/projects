@@ -1,0 +1,70 @@
+- name: Install Java
+  apt:
+    name: openjdk-17-jdk
+    update_cache: yes
+
+- name: Install Docker
+  apt:
+    name: docker.io
+    state: present
+
+- name: Add Jenkins GPG key
+  apt_key:
+    url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
+    state: present
+
+- name: Add Jenkins repository
+  apt_repository:
+    repo: deb https://pkg.jenkins.io/debian-stable binary/
+    state: present
+
+- name: Install Jenkins
+  apt:
+    name: jenkins
+    state: present
+
+- name: Start Jenkins
+  service:
+    name: jenkins
+    state: started
+    enabled: true
+
+- name: Add Jenkins user to Docker group
+  user:
+    name: jenkins
+    groups: docker
+    append: yes
+
+- name: Restart Jenkins to apply Docker group permissions
+  service:
+    name: jenkins
+    state: restarted
+
+- name: Read initial admin password
+  slurp:
+    src: /var/lib/jenkins/secrets/initialAdminPassword
+  register: admin_pass
+
+- name: Print Jenkins initial admin password
+  debug:
+    msg: "Initial Jenkins admin password: {{ admin_pass.content | b64decode }}"
+# This prints the default password to use for the
+
+- name: Download Jenkins CLI
+  get_url:
+    url: "http://localhost:8080/jnlpJars/jenkins-cli.jar"
+    dest: "/tmp/jenkins-cli.jar"
+
+- name: Install Jenkins plugins
+  shell: >
+    java -jar /tmp/jenkins-cli.jar -s http://localhost:8080/ -auth admin:{{ admin_pass.content | b64decode }} install-plugin {{ item }} -deploy
+  loop:
+    - git
+    - docker-plugin
+    - kubernetes
+    - pipeline
+    - blueocean
+  retries: 3
+  delay: 10
+  register: plugin_result
+  until: plugin_result.rc == 0

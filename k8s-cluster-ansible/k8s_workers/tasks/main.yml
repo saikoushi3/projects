@@ -63,4 +63,3 @@
 
 - name: joining to Master
   command: "{{ hostvars[groups['k8s_master'][0]]['token']['stdout'] }}"
-  notyfy: 

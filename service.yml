@@ -1,0 +1,18 @@
+```yaml
+# service.yml - Exposes the deployment to the internet
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejs-app-service
+  namespace: default # Or a custom namespace
+spec:
+  selector:
+    app: nodejs-app
+  # Expose the service on a static port on each node
+  # so that we can access it from outside the cluster
+  type: LoadBalancer 
+  ports:
+    - protocol: TCP
+      port: 80 # The port the service is exposed on
+      targetPort: 8080 # The target port on the pods

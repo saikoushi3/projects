@@ -60,8 +60,13 @@
 - name: "Apply all sysctl settings"
   shell: "sysctl --system"
 
-- name: "Starting kubeadm service"
-  shell: "kubeadm init  --ignore-preflight-errors=all"
+ # - name: "Starting kubeadm service"
+  # shell: "kubeadm init  --ignore-preflight-errors=all"
+- name: Initialize Kubernetes Master
+  shell: kubeadm init --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=allS
+  register: kubeadm_init
+  args:
+    creates: /etc/kubernetes/admin.conf
 
 - name: Setup kubeconfig for kubectl
   block:
@@ -84,6 +89,8 @@
 
 - name: "Installing Addons e.g flannel"
   shell: "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
+  environment:
+    KUBECONFIG: /home/ec2-user/.kube/config
 
 - name: "Creating the token"
   shell: "kubeadm token create --print-join-command"
