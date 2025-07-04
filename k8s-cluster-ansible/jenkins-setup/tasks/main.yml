@@ -40,6 +40,39 @@
     name: jenkins
     state: restarted
 
+- name: Get latest stable kubectl version
+  shell: curl -sL https://dl.k8s.io/release/stable.txt
+  register: kubectl_version_raw
+  changed_when: false
+
+- name: Set kubectl version fact
+  set_fact:
+    kubectl_version: "{{ kubectl_version_raw.stdout }}"
+
+- name: Download latest stable kubectl binary
+  get_url:
+    url: "https://dl.k8s.io/release/{{ kubectl_version }}/bin/linux/amd64/kubectl"
+    dest: "/tmp/kubectl"
+    mode: '0755'
+
+- name: Make kubectl executable
+  file:
+    path: /tmp/kubectl
+    mode: '0755'
+
+- name: Move kubectl to /usr/local/bin
+  become: yes
+  command: mv /tmp/kubectl /usr/local/bin/kubectl
+
+- name: Verify kubectl installation
+  command: kubectl version --client
+  register: kubectl_output
+  changed_when: false
+
+- name: Print kubectl version
+  debug:
+    msg: "{{ kubectl_output.stdout }}"
+
 - name: Read initial admin password
   slurp:
     src: /var/lib/jenkins/secrets/initialAdminPassword
@@ -49,22 +82,3 @@
   debug:
     msg: "Initial Jenkins admin password: {{ admin_pass.content | b64decode }}"
 # This prints the default password to use for the
-
-- name: Download Jenkins CLI
-  get_url:
-    url: "http://localhost:8080/jnlpJars/jenkins-cli.jar"
-    dest: "/tmp/jenkins-cli.jar"
-
-- name: Install Jenkins plugins
-  shell: >
-    java -jar /tmp/jenkins-cli.jar -s http://localhost:8080/ -auth admin:{{ admin_pass.content | b64decode }} install-plugin {{ item }} -deploy
-  loop:
-    - git
-    - docker-plugin
-    - kubernetes
-    - pipeline
-    - blueocean
-  retries: 3
-  delay: 10
-  register: plugin_result
-  until: plugin_result.rc == 0
