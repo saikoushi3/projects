@@ -1,0 +1,24 @@
+# deployment.yml - Defines how to run the application on Kubernetes
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs-app-deployment
+  namespace: default # Or a custom namespace
+spec:
+  replicas: 2 # Number of pods to run
+  selector:
+    matchLabels:
+      app: nodejs-app
+  template:
+    metadata:
+      labels:
+        app: nodejs-app
+    spec:
+      containers:
+      - name: nodejs-app-container
+        # IMPORTANT: This will be replaced by Jenkins with the correct image URL and tag
+        image: YOUR_ECR_REPOSITORY_URL:latest
+        ports:
+        - containerPort: 8080
+

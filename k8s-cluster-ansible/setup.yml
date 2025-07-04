@@ -1,0 +1,20 @@
+
+
+- name: Kubernetes Master Setup
+  hosts: k8s_master
+  become: yes
+  roles:
+    - role: k8s_master
+
+- name: Kubernetes Worker Setup
+  hosts: k8s_workers
+  become: yes
+  roles:
+    - role: k8s_workers
+
+- name: Jenkins Setup
+  hosts: jenkins
+  become: yes
+  roles:
+    - role: jenkins-setup
+  tags: jenkins-setup

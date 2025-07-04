@@ -1,0 +1,65 @@
+---
+# tasks file for k8s_workers
+#
+- name: "Installing docker and iproute-tc"
+  package:
+     name:
+         - docker
+         - iproute-tc
+     state: present
+
+- name: Set up Kubernetes repository on Amazon Linux 2
+  yum_repository:
+    name: kubernetes
+    description: Kubernetes Repo
+    baseurl: https://pkgs.k8s.io/core:/stable:/v1.30/rpm/
+    enabled: yes
+    gpgcheck: yes
+    repo_gpgcheck: yes
+    gpgkey: https://pkgs.k8s.io/core:/stable:/v1.30/rpm/repodata/repomd.xml.key
+
+- name: "Installing kubeadm,kubelet kubectl program"
+  yum:
+     name:
+        - kubelet
+        - kubectl
+        - kubeadm
+     state: present
+
+- name: "Enabling the docker and kubenetes"
+  service:
+     name: "{{ item }}"
+     state: started
+     enabled: yes
+  loop:
+        - kubelet
+        - docker
+
+- name: "Pulling the config images"
+  shell: kubeadm config images pull
+
+- name: "Confuring the docker daemon.json file"
+  copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+      "exec-opts": ["native.cgroupdriver=systemd"]
+      }
+
+- name: "Restarting the docker service"
+  service:
+     name: docker
+     state: restarted
+
+- name: "Configuring the Ip tables and refreshing sysctl"
+  copy:
+    dest: /etc/sysctl.d/k8s.conf
+    content: |
+      net.bridge.bridge-nf-call-ip6tables = 1
+      net.bridge.bridge-nf-call-iptables = 1
+
+- name: "systemctl"
+  shell: "sysctl --system"
+
+- name: joining to Master
+  command: "{{ hostvars[groups['k8s_master'][0]]['token']['stdout'] }}"
