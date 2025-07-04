@@ -1,4 +1,4 @@
-```docker
+
 # Dockerfile - Instructions to build the Node.js application image
 
 # Use an official Node.js runtime as a parent image
