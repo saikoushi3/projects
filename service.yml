@@ -1,6 +1,5 @@
-```yaml
-# service.yml - Exposes the deployment to the internet
 
+# service.yml - Exposes the deployment to the internet
 apiVersion: v1
 kind: Service
 metadata:
