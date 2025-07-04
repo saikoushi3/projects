@@ -11,7 +11,7 @@ pipeline {
         // Full image name for Docker Hub
         DOCKER_IMAGE = "${DOCKERHUB_USERNAME}/${IMAGE_REPO_NAME}"
         // The ID you give your Docker Hub credentials in Jenkins
-        DOCKER_CREDENTIALS_ID = "docker-hub-access" // This must match the ID in Jenkins
+        DOCKER_CREDENTIALS_ID = "docker-hub-acces" // This must match the ID in Jenkins
         // The ID you give your kubeconfig file in Jenkins
         KUBECONFIG_CREDENTIALS_ID = "kubernetes-acces" // This must match the ID in Jenkins
     }
