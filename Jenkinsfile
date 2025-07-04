@@ -53,7 +53,7 @@ pipeline {
                 // Use the withKubeconfig wrapper to securely provide the kubeconfig file
                 // to the steps within this block. Jenkins makes it available at the path
                 // specified by the KUBECONFIG environment variable.
-                withKubeconfig([credentialsId: KUBECONFIG_CREDENTIALS_ID]) {
+                withCredentials([file(credentialsId: KUBECONFIG_CREDENTIALS_ID, variable: 'KUBECONFIG')]) {
                     script {
                         echo 'INFO: Kubeconfig set. Now deploying to the custom cluster.'
 
