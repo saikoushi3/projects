@@ -5,21 +5,21 @@ pipeline {
 
     environment {
         // Your Docker Hub username
-        DOCKERHUB_USERNAME = "your-dockerhub-username" // CHANGE THIS
+        DOCKERHUB_USERNAME = "koushidev" // CHANGE THIS
         // The name of your image repository on Docker Hub
-        IMAGE_REPO_NAME = "your-repo-name" // CHANGE THIS
+        IMAGE_REPO_NAME = "nodejs-test-app" // CHANGE THIS
         // Full image name for Docker Hub
         DOCKER_IMAGE = "${DOCKERHUB_USERNAME}/${IMAGE_REPO_NAME}"
         // The ID you give your Docker Hub credentials in Jenkins
-        DOCKER_CREDENTIALS_ID = "dockerhub-credentials" // This must match the ID in Jenkins
+        DOCKER_CREDENTIALS_ID = "docker-hub-access" // This must match the ID in Jenkins
         // The ID you give your kubeconfig file in Jenkins
-        KUBECONFIG_CREDENTIALS_ID = "kubeconfig-custom-cluster" // This must match the ID in Jenkins
+        KUBECONFIG_CREDENTIALS_ID = "kubernetes-acces" // This must match the ID in Jenkins
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/your-username/your-repo-name.git' // CHANGE THIS
+                git 'https://github.com/saikoushi3/projects.git' // CHANGE THIS
             }
         }
 
