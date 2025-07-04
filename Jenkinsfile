@@ -19,7 +19,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/saikoushi3/projects.git' // CHANGE THIS
+                 git branch: 'main', url: 'https://github.com/saikoushi3/projects.git' // CHANGE THIS
             }
         }
 
