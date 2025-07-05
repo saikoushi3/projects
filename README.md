@@ -7,16 +7,27 @@ An end-to-end DevOps project to provision, configure, and deploy a Node.js appli
 ## 📁 Project Structure
 
 ├── jenkins-setup/ # Ansible role to install and configure Jenkins
+
 ├── k8s_master/ # Ansible role to configure Kubernetes master
+
 ├── k8s_workers/ # Ansible role to configure Kubernetes worker nodes
+
 ├── terraform/ # Terraform templates to provision EC2 instances
+
 ├── inventory.ini # Ansible inventory file (IP addresses of Jenkins/master/worker nodes)
+
 ├── setup.yml # Main Ansible playbook
+
 ├── deployment.yml # Kubernetes Deployment manifest for Node.js app
+
 ├── service.yml # Kubernetes Service manifest
+
 ├── Dockerfile # Dockerfile to containerize the Node.js app
+
 ├── Jenkinsfile # Jenkins pipeline definition
+
 ├── server.js # Node.js application entry point
+
 └── package.json # Node.js project metadata
 
 
